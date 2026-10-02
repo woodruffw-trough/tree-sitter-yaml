@@ -1,5 +1,5 @@
 [package]
-name = "tree-sitter-yaml"
+name = "woodruffw-trough-tree-sitter-yaml"
 description = "YAML grammar for tree-sitter"
 version = "0.7.2"
 authors = ["Ika <ikatyang@gmail.com>", "Amaan Qureshi <amaanq12@gmail.com>"]
@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 keywords = ["incremental", "parsing", "tree-sitter", "yaml"]
 categories = ["parser-implementations", "parsing", "text-editors"]
-repository = "https://github.com/tree-sitter-grammars/tree-sitter-yaml"
+repository = "https://github.com/woodruffw-trough/tree-sitter-yaml"
 edition = "2021"
 autoexamples = false
 

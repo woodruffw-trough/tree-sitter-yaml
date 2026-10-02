@@ -46,6 +46,8 @@ jobs:
         run: make generate
       - name: Check generated sources
         run: git diff --exit-code -- src schema
+      - name: Test scanner serialization with sanitizers
+        run: make test-scanner CFLAGS="-O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all"
 
   test:
     name: Test parsers

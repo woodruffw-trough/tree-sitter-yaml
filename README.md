@@ -26,8 +26,8 @@ make test
 and scalar-schema grammars. A Python script then extracts the scalar-schema C
 tables from the generated lexers. It uses only the Python standard library.
 
-`make test` runs the Rust unit tests and doctests, parser corpus tests, and
-highlight tests. Cargo builds use the checked-in C sources.
+`make test` runs the scanner tests, Rust unit tests and doctests, parser corpus
+tests, and highlight tests. Cargo builds use the checked-in C sources.
 
 ## References
 

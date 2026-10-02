@@ -1,7 +1,7 @@
 TS ?= tree-sitter
 PYTHON ?= python3
 
-.PHONY: generate test
+.PHONY: generate test test-scanner
 
 generate:
 	$(TS) generate --js-runtime native --abi 15
@@ -10,6 +10,11 @@ generate:
 		$(PYTHON) schema/update-schema.py $$schema; \
 	done
 
-test:
+test: test-scanner
 	cargo test --locked
 	$(TS) test
+
+test-scanner:
+	mkdir -p target
+	$(CC) $(CFLAGS) -std=c11 -Isrc test/scanner.c -o target/scanner-test
+	./target/scanner-test

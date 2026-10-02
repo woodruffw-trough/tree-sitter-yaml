@@ -179,9 +179,10 @@ static unsigned serialize(Scanner *scanner, char *buffer) {
     int16_t *typ_itr = scanner->ind_typ_stk.contents + 1;
     int16_t *typ_end = scanner->ind_typ_stk.contents + scanner->ind_typ_stk.size;
     int16_t *len_itr = scanner->ind_len_stk.contents + 1;
-    for (; typ_itr != typ_end && size + 2 * sizeof(int16_t) <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE; ++typ_itr, ++len_itr) {
-        memcpy(&buffer[size], typ_itr, sizeof(*typ_itr));
-        size += sizeof(int16_t);
+    // Indentation kinds are single-byte tags, so each entry needs only three bytes.
+    for (; typ_itr != typ_end && size + sizeof(uint8_t) + sizeof(int16_t) <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE;
+         ++typ_itr, ++len_itr) {
+        buffer[size++] = (char)*typ_itr;
         memcpy(&buffer[size], len_itr, sizeof(*len_itr));
         size += sizeof(int16_t);
     }
@@ -211,10 +212,8 @@ static void deserialize(Scanner *scanner, const char *buffer, unsigned length) {
         memcpy(&scanner->blk_imp_tab, &buffer[size], sizeof(scanner->blk_imp_tab));
         size += sizeof(scanner->blk_imp_tab);
         while (size < length) {
-            int16_t typ;
+            uint8_t typ = (uint8_t)buffer[size++];
             int16_t len;
-            memcpy(&typ, &buffer[size], sizeof(typ));
-            size += sizeof(typ);
             memcpy(&len, &buffer[size], sizeof(len));
             size += sizeof(len);
             array_push(&scanner->ind_typ_stk, typ);

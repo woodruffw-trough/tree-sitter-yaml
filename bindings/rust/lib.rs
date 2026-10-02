@@ -71,4 +71,23 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn test_deep_indentation() {
+        let mut parser = tree_sitter::Parser::new();
+        parser.set_language(&super::LANGUAGE.into()).unwrap();
+        let mut source = String::new();
+        for depth in 0..253 {
+            source.push_str(&" ".repeat(depth));
+            source.push_str("key:\n");
+        }
+        source.push_str(&" ".repeat(253));
+        source.push_str("value\n");
+        for depth in (0..253).rev() {
+            source.push_str(&" ".repeat(depth));
+            source.push_str("other: done\n");
+        }
+        let tree = parser.parse(&source, None).unwrap();
+        assert!(!tree.root_node().has_error());
+    }
 }

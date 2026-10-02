@@ -39,7 +39,7 @@ static void test_serialization_bounds(void) {
 static void test_row_serialization(void) {
     Scanner scanner = {0};
     Scanner restored = {0};
-    char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 1];
+    _Alignas(uint32_t) char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 1];
     const uint32_t rows[] = {32767, 32768, 65536, UINT32_MAX - 1};
     deserialize(&scanner, NULL, 0);
 
@@ -48,7 +48,7 @@ static void test_row_serialization(void) {
         scanner.blk_imp_row = rows[i] - 1;
         scanner.col = 3;
         scanner.blk_imp_col = 1;
-        // Exercise byte buffers without any alignment guarantee.
+        // Offset the aligned backing array to exercise an unaligned byte buffer.
         unsigned length = serialize(&scanner, buffer + 1);
         deserialize(&restored, buffer + 1, length);
         assert(restored.row == scanner.row);

@@ -41,7 +41,7 @@ jobs:
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action/cli@v2
         with:
-          tree-sitter-ref: v0.26.3
+          tree-sitter-ref: v0.27.0
       - name: Regenerate parsers and schemas with QuickJS
         run: make generate
       - name: Check generated sources
@@ -62,7 +62,7 @@ jobs:
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action/cli@v2
         with:
-          tree-sitter-ref: v0.26.3
+          tree-sitter-ref: v0.27.0
       - name: Run parser tests
         run: tree-sitter test
       - name: Run Rust tests

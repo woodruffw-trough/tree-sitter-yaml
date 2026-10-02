@@ -33,5 +33,16 @@
     "links": {
       "repository": "https://github.com/tree-sitter-grammars/tree-sitter-yaml"
     }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "kotlin": false,
+    "node": false,
+    "python": false,
+    "rust": true,
+    "swift": false,
+    "zig": false
   }
 }

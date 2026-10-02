@@ -8,14 +8,20 @@ on:
       - src/**
       - test/**
       - bindings/**
-      - binding.gyp
+      - Cargo.toml
+      - Cargo.lock
+      - tree-sitter.json
+      - .github/workflows/ci.yml
   pull_request:
     paths:
       - grammar.js
       - src/**
       - test/**
       - bindings/**
-      - binding.gyp
+      - Cargo.toml
+      - Cargo.lock
+      - tree-sitter.json
+      - .github/workflows/ci.yml
 
 concurrency:
   group: ${{github.workflow}}-${{github.ref}}

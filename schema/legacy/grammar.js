@@ -1,8 +1,6 @@
 /** @see {@link YAML 1.1|https://yaml.org/type/} */
 
-/// <reference types="tree-sitter-cli/dsl" />
-
-module.exports = grammar({
+export default grammar({
   name: "legacy_schema",
 
   extras: _ => [],

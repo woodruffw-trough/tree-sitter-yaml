@@ -1,9 +1,6 @@
 # Rust artifacts
 target/
 
-# Development dependencies
-node_modules/
-
 # C artifacts
 *.a
 *.so

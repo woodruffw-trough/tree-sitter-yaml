@@ -1,8 +1,6 @@
 /** @see {@link Core Schema|https://yaml.org/spec/1.2.2/#103-core-schema} */
 
-/// <reference types="tree-sitter-cli/dsl" />
-
-module.exports = grammar({
+export default grammar({
   name: "core_schema",
 
   extras: _ => [],

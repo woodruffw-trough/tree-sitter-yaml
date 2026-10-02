@@ -17,7 +17,7 @@ Add `woodruffw-trough-tree-sitter-yaml` to your Cargo dependencies and use
 Install Rust, a C compiler, Make, Python 3.9 or newer, and the pinned Tree-sitter CLI:
 
 ```sh
-cargo install tree-sitter-cli --version 0.26.3 --locked
+cargo install tree-sitter-cli --version 0.27.0 --locked
 make generate
 make test
 ```

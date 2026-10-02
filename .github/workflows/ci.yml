@@ -27,6 +27,8 @@ on:
       - tree-sitter.json
       - .github/workflows/ci.yml
 
+permissions: {}
+
 concurrency:
   group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
@@ -35,11 +37,15 @@ jobs:
   generate:
     name: Verify generated sources
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Set up tree-sitter
-        uses: tree-sitter/setup-action/cli@v2
+        uses: tree-sitter/setup-action/cli@49f8c1f20b60102eae8c033bb7c7f6cd056f6086 # v2
         with:
           tree-sitter-ref: v0.27.0
       - name: Regenerate parsers and schemas with QuickJS
@@ -52,23 +58,26 @@ jobs:
   test:
     name: Test parsers
     runs-on: ${{matrix.os}}
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
           submodules: true
       - name: Set up tree-sitter
-        uses: tree-sitter/setup-action/cli@v2
+        uses: tree-sitter/setup-action/cli@49f8c1f20b60102eae8c033bb7c7f6cd056f6086 # v2
         with:
           tree-sitter-ref: v0.27.0
       - name: Run parser tests
         run: tree-sitter test
       - name: Run Rust tests
-        uses: tree-sitter/parser-test-action/rust@v2
+        uses: tree-sitter/parser-test-action/rust@aba4a3de737f86f8ce83be38166a1ab521d4c960 # v2
       - name: Set up test suite
         shell: bash
         run: |-
@@ -80,7 +89,7 @@ jobs:
             fi
           done < <(find -L examples/yaml-test-suite/name -name in.yaml)
       - name: Parse test suite
-        uses: tree-sitter/parse-action@v4
+        uses: tree-sitter/parse-action@f44ffa94f802024f27e821a72e6f2f3efc5dd521 # v4
         with:
           files-list: ${{runner.temp}}/test-files
           invalid-files-list: ${{runner.temp}}/invalid-files

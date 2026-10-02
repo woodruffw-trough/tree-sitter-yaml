@@ -7,6 +7,23 @@
 
 A tree-sitter parser for YAML files. This fork provides Rust bindings only.
 
+## Development
+
+Install Rust, a C compiler, Make, Python 3.9 or newer, and the pinned Tree-sitter CLI:
+
+```sh
+cargo install tree-sitter-cli --version 0.26.3 --locked
+make generate
+make test
+```
+
+`make generate` uses Tree-sitter's bundled QuickJS runtime to evaluate the YAML
+and scalar-schema grammars. A Python script then extracts the scalar-schema C
+tables from the generated lexers. It uses only the Python standard library.
+
+`make test` runs the Rust unit tests and doctests, parser corpus tests, and
+highlight tests. Cargo builds use the checked-in C sources.
+
 ## References
 
 - [YAML version 1.2](https://yaml.org/spec/1.2.2/)

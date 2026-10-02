@@ -4,13 +4,8 @@
  * @license MIT
  */
 
-/// <reference types="tree-sitter-cli/dsl" />
-
-module.exports = grammar({
+const yaml = grammar({
   name: 'yaml',
-
-  /* eslint-disable no-multi-spaces */
-  /* eslint-disable indent */
 
   externals: $ => [
     $._eof,
@@ -71,9 +66,6 @@ module.exports = grammar({
 
     $._err_rec,
   ],
-
-  /* eslint-enable no-multi-spaces */
-  /* eslint-enable indent */
 
   extras: $ => [$.comment],
 
@@ -564,7 +556,7 @@ module.exports = grammar({
   },
 });
 
-module.exports.grammar = global_alias(global_alias(module.exports.grammar, {
+yaml.grammar = global_alias(global_alias(yaml.grammar, {
   ..._('yaml_directive', '_s_dir_yml'),
   ..._('yaml_version', '_r_dir_yml_ver'),
   ..._('tag_directive', '_s_dir_tag'),
@@ -641,6 +633,8 @@ module.exports.grammar = global_alias(global_alias(module.exports.grammar, {
   ..._('*', '_r_als_bgn', '_br_als_bgn', '_b_als_bgn'),
   ..._('&', '_r_acr_bgn', '_br_acr_bgn', '_b_acr_bgn'),
 });
+
+export default yaml;
 
 /**
  *

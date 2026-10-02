@@ -5,6 +5,8 @@ on:
     branches: [master]
     paths:
       - grammar.js
+      - schema/**
+      - Makefile
       - src/**
       - test/**
       - bindings/**
@@ -15,6 +17,8 @@ on:
   pull_request:
     paths:
       - grammar.js
+      - schema/**
+      - Makefile
       - src/**
       - test/**
       - bindings/**
@@ -28,6 +32,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  generate:
+    name: Verify generated sources
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v2
+        with:
+          tree-sitter-ref: v0.26.3
+      - name: Regenerate parsers and schemas with QuickJS
+        run: make generate
+      - name: Check generated sources
+        run: git diff --exit-code -- src schema
+
   test:
     name: Test parsers
     runs-on: ${{matrix.os}}
@@ -42,11 +61,12 @@ jobs:
           submodules: true
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action/cli@v2
-      - name: Run tests
-        uses: tree-sitter/parser-test-action@v2
         with:
-          generate: false
-          test-rust: true
+          tree-sitter-ref: v0.26.3
+      - name: Run parser tests
+        run: tree-sitter test
+      - name: Run Rust tests
+        uses: tree-sitter/parser-test-action/rust@v2
       - name: Set up test suite
         shell: bash
         run: |-

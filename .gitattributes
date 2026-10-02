@@ -9,7 +9,3 @@ src/tree_sitter/* linguist-generated
 bindings/rust/* linguist-generated
 Cargo.toml linguist-generated
 Cargo.lock linguist-generated
-
-# Development tooling
-package.json linguist-generated
-package-lock.json linguist-generated

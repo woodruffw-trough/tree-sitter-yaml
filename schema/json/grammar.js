@@ -1,8 +1,6 @@
 /** @see {@link JSON Schema|https://yaml.org/spec/1.2.2/#102-json-schema} */
 
-/// <reference types="tree-sitter-cli/dsl" />
-
-module.exports = grammar({
+export default grammar({
   name: "json_schema",
 
   extras: _ => [],

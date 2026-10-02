@@ -10,7 +10,9 @@ permissions:
 jobs:
   crates:
     runs-on: ubuntu-latest
-    environment: crates
+    environment:
+      name: crates
+      url: https://crates.io/crates/woodruffw-trough-tree-sitter-yaml
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -11,7 +11,7 @@
 //!     - item2
 //! "#;
 //! let mut parser = tree_sitter::Parser::new();
-//! let language = tree_sitter_yaml::LANGUAGE;
+//! let language = woodruffw_trough_tree_sitter_yaml::LANGUAGE;
 //! parser
 //!     .set_language(&language.into())
 //!     .expect("Error loading YAML parser");

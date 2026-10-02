@@ -31,7 +31,7 @@
       }
     ],
     "links": {
-      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-yaml"
+      "repository": "https://github.com/woodruffw-trough/tree-sitter-yaml"
     }
   },
   "bindings": {

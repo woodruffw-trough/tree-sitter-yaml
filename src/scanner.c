@@ -146,18 +146,18 @@ typedef enum {
 #endif
 
 typedef struct {
-    int16_t row;
+    uint32_t row;
     int16_t col;
-    int16_t blk_imp_row;
+    uint32_t blk_imp_row;
     int16_t blk_imp_col;
     int16_t blk_imp_tab;
     Array(int16_t) ind_typ_stk;
     Array(int16_t) ind_len_stk;
 
     // temp
-    int16_t end_row;
+    uint32_t end_row;
     int16_t end_col;
-    int16_t cur_row;
+    uint32_t cur_row;
     int16_t cur_col;
     int32_t cur_chr;
     int8_t sch_stt;
@@ -166,23 +166,24 @@ typedef struct {
 
 static unsigned serialize(Scanner *scanner, char *buffer) {
     size_t size = 0;
-    *(int16_t *)&buffer[size] = scanner->row;
-    size += sizeof(int16_t);
-    *(int16_t *)&buffer[size] = scanner->col;
-    size += sizeof(int16_t);
-    *(int16_t *)&buffer[size] = scanner->blk_imp_row;
-    size += sizeof(int16_t);
-    *(int16_t *)&buffer[size] = scanner->blk_imp_col;
-    size += sizeof(int16_t);
-    *(int16_t *)&buffer[size] = scanner->blk_imp_tab;
-    size += sizeof(int16_t);
+    memcpy(&buffer[size], &scanner->row, sizeof(scanner->row));
+    size += sizeof(scanner->row);
+    memcpy(&buffer[size], &scanner->col, sizeof(scanner->col));
+    size += sizeof(scanner->col);
+    memcpy(&buffer[size], &scanner->blk_imp_row, sizeof(scanner->blk_imp_row));
+    size += sizeof(scanner->blk_imp_row);
+    memcpy(&buffer[size], &scanner->blk_imp_col, sizeof(scanner->blk_imp_col));
+    size += sizeof(scanner->blk_imp_col);
+    memcpy(&buffer[size], &scanner->blk_imp_tab, sizeof(scanner->blk_imp_tab));
+    size += sizeof(scanner->blk_imp_tab);
     int16_t *typ_itr = scanner->ind_typ_stk.contents + 1;
     int16_t *typ_end = scanner->ind_typ_stk.contents + scanner->ind_typ_stk.size;
     int16_t *len_itr = scanner->ind_len_stk.contents + 1;
-    for (; typ_itr != typ_end && size + 2 * sizeof(int16_t) <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE; ++typ_itr, ++len_itr) {
-        *(int16_t *)&buffer[size] = *typ_itr;
-        size += sizeof(int16_t);
-        *(int16_t *)&buffer[size] = *len_itr;
+    // Indentation kinds are single-byte tags, so each entry needs only three bytes.
+    for (; typ_itr != typ_end && size + sizeof(uint8_t) + sizeof(int16_t) <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE;
+         ++typ_itr, ++len_itr) {
+        buffer[size++] = (char)*typ_itr;
+        memcpy(&buffer[size], len_itr, sizeof(*len_itr));
         size += sizeof(int16_t);
     }
     return size;
@@ -191,7 +192,7 @@ static unsigned serialize(Scanner *scanner, char *buffer) {
 static void deserialize(Scanner *scanner, const char *buffer, unsigned length) {
     scanner->row = 0;
     scanner->col = 0;
-    scanner->blk_imp_row = -1;
+    scanner->blk_imp_row = UINT32_MAX;
     scanner->blk_imp_col = -1;
     scanner->blk_imp_tab = 0;
     array_delete(&scanner->ind_typ_stk);
@@ -200,21 +201,23 @@ static void deserialize(Scanner *scanner, const char *buffer, unsigned length) {
     array_push(&scanner->ind_len_stk, -1);
     if (length > 0) {
         size_t size = 0;
-        scanner->row = *(int16_t *)&buffer[size];
-        size += sizeof(int16_t);
-        scanner->col = *(int16_t *)&buffer[size];
-        size += sizeof(int16_t);
-        scanner->blk_imp_row = *(int16_t *)&buffer[size];
-        size += sizeof(int16_t);
-        scanner->blk_imp_col = *(int16_t *)&buffer[size];
-        size += sizeof(int16_t);
-        scanner->blk_imp_tab = *(int16_t *)&buffer[size];
-        size += sizeof(int16_t);
+        memcpy(&scanner->row, &buffer[size], sizeof(scanner->row));
+        size += sizeof(scanner->row);
+        memcpy(&scanner->col, &buffer[size], sizeof(scanner->col));
+        size += sizeof(scanner->col);
+        memcpy(&scanner->blk_imp_row, &buffer[size], sizeof(scanner->blk_imp_row));
+        size += sizeof(scanner->blk_imp_row);
+        memcpy(&scanner->blk_imp_col, &buffer[size], sizeof(scanner->blk_imp_col));
+        size += sizeof(scanner->blk_imp_col);
+        memcpy(&scanner->blk_imp_tab, &buffer[size], sizeof(scanner->blk_imp_tab));
+        size += sizeof(scanner->blk_imp_tab);
         while (size < length) {
-            array_push(&scanner->ind_typ_stk, *(int16_t *)&buffer[size]);
-            size += sizeof(int16_t);
-            array_push(&scanner->ind_len_stk, *(int16_t *)&buffer[size]);
-            size += sizeof(int16_t);
+            uint8_t typ = (uint8_t)buffer[size++];
+            int16_t len;
+            memcpy(&len, &buffer[size], sizeof(len));
+            size += sizeof(len);
+            array_push(&scanner->ind_typ_stk, typ);
+            array_push(&scanner->ind_len_stk, len);
         }
         assert(size == length);
     }
@@ -887,7 +890,7 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         return false;
     }
 
-    int16_t bgn_row = scanner->cur_row;
+    uint32_t bgn_row = scanner->cur_row;
     int16_t bgn_col = scanner->cur_col;
     int32_t bgn_chr = lexer->lookahead;
 

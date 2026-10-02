@@ -34,7 +34,35 @@ static void test_serialization_bounds(void) {
     free(buffer);
 }
 
+static void test_row_serialization(void) {
+    Scanner scanner = {0};
+    Scanner restored = {0};
+    char buffer[TREE_SITTER_SERIALIZATION_BUFFER_SIZE + 1];
+    const uint32_t rows[] = {32767, 32768, 65536, UINT32_MAX - 1};
+    deserialize(&scanner, NULL, 0);
+
+    for (unsigned i = 0; i < sizeof(rows) / sizeof(rows[0]); i++) {
+        scanner.row = rows[i];
+        scanner.blk_imp_row = rows[i] - 1;
+        scanner.col = 3;
+        scanner.blk_imp_col = 1;
+        // Exercise byte buffers without any alignment guarantee.
+        unsigned length = serialize(&scanner, buffer + 1);
+        deserialize(&restored, buffer + 1, length);
+        assert(restored.row == scanner.row);
+        assert(restored.blk_imp_row == scanner.blk_imp_row);
+        assert(restored.col == scanner.col);
+        assert(restored.blk_imp_col == scanner.blk_imp_col);
+    }
+
+    array_delete(&scanner.ind_typ_stk);
+    array_delete(&scanner.ind_len_stk);
+    array_delete(&restored.ind_typ_stk);
+    array_delete(&restored.ind_len_stk);
+}
+
 int main(void) {
     test_serialization_bounds();
+    test_row_serialization();
     return 0;
 }

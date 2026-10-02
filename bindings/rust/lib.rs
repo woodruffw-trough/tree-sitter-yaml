@@ -48,4 +48,27 @@ mod tests {
             .set_language(&super::LANGUAGE.into())
             .expect("Error loading YAML parser");
     }
+
+    #[test]
+    fn test_large_row_numbers() {
+        let mut parser = tree_sitter::Parser::new();
+        parser.set_language(&super::LANGUAGE.into()).unwrap();
+        let document = "key:\n  - value\n  - other\nnext: done\n";
+        let expected = parser.parse(document, None).unwrap().root_node().to_sexp();
+
+        for padding in [32_765, 32_766, 32_767, 32_768, 65_535, 65_536] {
+            let source = "\n".repeat(padding) + document;
+            let tree = parser.parse(&source, None).unwrap();
+            assert!(!tree.root_node().has_error(), "padding: {padding}");
+            assert_eq!(tree.root_node().to_sexp(), expected, "padding: {padding}");
+            assert_eq!(
+                tree.root_node()
+                    .named_child(0)
+                    .unwrap()
+                    .start_position()
+                    .row,
+                padding
+            );
+        }
+    }
 }
